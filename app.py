@@ -7,6 +7,8 @@ current_video_url = ""
 
 options = ChromeOptions()
 options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--no-sandbox")
 options.headless = True
 
 driver = Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=options)
@@ -29,6 +31,7 @@ while True:
 
     current_video_url = videos[next_video_index]
     driver.get(current_video_url)
+    print(f"Currently Playing: {current_video_url}")
 
     while True:
         try:
