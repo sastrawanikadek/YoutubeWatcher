@@ -1,13 +1,15 @@
 from selenium.webdriver import Chrome, ChromeOptions
 from selenium.common.exceptions import ElementClickInterceptedException, ElementNotInteractableException
+import os
 
 channel_url = "https://www.youtube.com/c/NotSoKoplo/videos"
 current_video_url = ""
 
 options = ChromeOptions()
+options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
 options.headless = True
 
-driver = Chrome(executable_path="./drivers/chromedriver.exe", options=options)
+driver = Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=options)
 driver.get(channel_url)
 
 while True:
