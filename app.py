@@ -62,8 +62,8 @@ while True:
                     if not is_ads:
                         break
 
-            if driver.execute_script("return window.location.href") != current_video_url:
-                break
+                if driver.execute_script("return window.location.href") != current_video_url:
+                    break
         except (ElementNotInteractableException, ElementClickInterceptedException) as e:
             print(f"Exception ${e}")
             pass
