@@ -40,7 +40,7 @@ while True:
 
     while True:
         try:
-            if driver.execute_script('return document.readyState') == "complete":
+            if driver.execute_script("return Boolean document.querySelector('.ytp-time-current')"):
                 is_unstarted = driver.execute_script("return Boolean(document.querySelector('.unstarted-mode'))")
                 is_paused = driver.execute_script("return Boolean(document.querySelector('.paused-mode'))")
                 is_ads = driver.execute_script("return Boolean(document.querySelector('.ytp-ad-image'))")
