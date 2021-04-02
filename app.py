@@ -1,6 +1,7 @@
 from selenium.webdriver import Chrome, ChromeOptions
 from selenium.common.exceptions import ElementClickInterceptedException, ElementNotInteractableException
 import os
+import time
 
 channel_url = "https://www.youtube.com/c/NotSoKoplo/videos"
 current_video_url = ""
@@ -39,6 +40,7 @@ while True:
     first_time = True
 
     while True:
+        time.sleep(1)
         try:
             if driver.execute_script("return Boolean(document.querySelector('.ytp-time-current'))"):
                 is_unstarted = driver.execute_script("return Boolean(document.querySelector('.unstarted-mode'))")
@@ -54,14 +56,16 @@ while True:
                     driver.find_element_by_css_selector(".ytp-settings-button").click()
                     first_time = False
 
+                print(f"Time -> {current_time}/{duration}")
+
                 if current_time == duration:
                     if not is_ads:
                         break
 
-                print(f"Now Playing {driver.execute_script('return window.location.href')}")
-                if driver.execute_script("return window.location.href") != current_video_url:
-                    break
-        except (ElementNotInteractableException, ElementClickInterceptedException):
+            if driver.execute_script("return window.location.href") != current_video_url:
+                break
+        except (ElementNotInteractableException, ElementClickInterceptedException) as e:
+            print(f"Exception ${e}")
             pass
 
     driver.get(channel_url)
