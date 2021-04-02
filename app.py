@@ -44,7 +44,7 @@ while True:
     while True:
         time.sleep(1)
         try:
-            if driver.execute_script("return Boolean(document.querySelector('.ytp-time-current'))"):
+            if driver.execute_script("return Boolean(document.querySelector('video'))"):
                 is_ads = driver.execute_script("return Boolean(document.querySelector('.ytp-ad-image'))")
                 current_time = driver.execute_script("return document.querySelector('.ytp-time-current').innerHTML")
                 duration = driver.execute_script("return document.querySelector('.ytp-time-duration').innerHTML")
