@@ -3,6 +3,7 @@ from selenium.common.exceptions import ElementClickInterceptedException, Element
 import os
 import time
 
+exceptions_list = ["https://www.youtube.com/watch?v=oeU6n07RuAM", "https://www.youtube.com/watch?v=xc_9YYAiUck"]
 channel_url = "https://www.youtube.com/c/NotSoKoplo/videos"
 current_video_url = ""
 
@@ -34,6 +35,11 @@ while True:
         next_video_index = 0
 
     current_video_url = videos_href[next_video_index]
+
+    if current_video_url in exceptions_list:
+        print(f"Skip Playing: {current_video_url}")
+        continue
+
     videos[next_video_index].click()
     print(f"Currently Playing: {current_video_url}")
 
