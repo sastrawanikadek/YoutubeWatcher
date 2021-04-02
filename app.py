@@ -15,23 +15,28 @@ driver = Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=opt
 driver.get(channel_url)
 
 while True:
-    videos = driver.execute_script("return [...document.querySelectorAll('ytd-grid-video-renderer ytd-thumbnail a')]"
-                                   ".map(e => e.href)")
+    videos_href = driver.execute_script("return "
+                                        "[...document.querySelectorAll('ytd-grid-video-renderer ytd-thumbnail a')]"
+                                        ".map(e => e.href)")
+    videos = driver.find_elements_by_css_selector('ytd-grid-video-renderer ytd-thumbnail a')
 
-    while len(videos) == 0:
-        videos = driver.execute_script("return "
-                                       "[...document.querySelectorAll('ytd-grid-video-renderer ytd-thumbnail a')]"
-                                       ".map(e => e.href)")
+    while len(videos_href) == 0:
+        videos_href = driver.execute_script("return "
+                                            "[...document.querySelectorAll('ytd-grid-video-renderer ytd-thumbnail a')]"
+                                            ".map(e => e.href)")
+        videos = driver.find_elements_by_css_selector('ytd-grid-video-renderer ytd-thumbnail a')
 
     try:
-        video_index = videos.index(current_video_url)
-        next_video_index = 0 if video_index == len(videos) - 1 else video_index + 1
+        video_index = videos_href.index(current_video_url)
+        next_video_index = 0 if video_index == len(videos_href) - 1 else video_index + 1
     except ValueError:
         next_video_index = 0
 
-    current_video_url = videos[next_video_index]
-    driver.get(current_video_url)
+    current_video_url = videos_href[next_video_index]
+    videos[next_video_index].click()
     print(f"Currently Playing: {current_video_url}")
+
+    first_time = True
 
     while True:
         try:
@@ -42,14 +47,19 @@ while True:
                 current_time = driver.execute_script("return document.querySelector('.ytp-time-current').innerHTML")
                 duration = driver.execute_script("return document.querySelector('.ytp-time-duration').innerHTML")
 
-                if is_unstarted or is_paused:
-                    driver.find_element_by_css_selector(".ytp-play-button").click()
+                if first_time:
+                    if is_unstarted or is_paused:
+                        driver.find_element_by_css_selector(".ytp-play-button").click()
+
+                    driver.find_element_by_css_selector(".ytp-settings-button").click()
+                    first_time = False
 
                 if current_time == duration:
                     if not is_ads:
                         break
 
-                driver.find_element_by_css_selector(".ytp-settings-button").click()
+                if driver.execute_script("return window.location.href") != current_video_url:
+                    break
         except (ElementNotInteractableException, ElementClickInterceptedException):
             pass
 
