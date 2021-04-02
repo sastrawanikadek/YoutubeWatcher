@@ -37,24 +37,27 @@ while True:
     videos[next_video_index].click()
     print(f"Currently Playing: {current_video_url}")
 
-    first_time = True
+    prev_time = ""
+    prev_time_retry = 0
+    prev_time_max_retry = 5
 
     while True:
         time.sleep(1)
         try:
             if driver.execute_script("return Boolean(document.querySelector('.ytp-time-current'))"):
-                is_unstarted = driver.execute_script("return Boolean(document.querySelector('.unstarted-mode'))")
-                is_paused = driver.execute_script("return Boolean(document.querySelector('.paused-mode'))")
                 is_ads = driver.execute_script("return Boolean(document.querySelector('.ytp-ad-image'))")
                 current_time = driver.execute_script("return document.querySelector('.ytp-time-current').innerHTML")
                 duration = driver.execute_script("return document.querySelector('.ytp-time-duration').innerHTML")
 
-                if first_time:
-                    if is_unstarted or is_paused:
+                if current_time == prev_time:
+                    if prev_time_retry == prev_time_max_retry:
                         driver.find_element_by_css_selector(".ytp-play-button").click()
+                        prev_time_retry = 0
+                    else:
+                        prev_time_retry += 1
 
+                if driver.execute_script("return document.querySelector('.ytp-settings-menu').style.display") == "none":
                     driver.find_element_by_css_selector(".ytp-settings-button").click()
-                    first_time = False
 
                 print(f"Time -> {current_time}/{duration}")
 
@@ -64,6 +67,8 @@ while True:
 
                 if driver.execute_script("return window.location.href") != current_video_url:
                     break
+
+                prev_time = current_time
         except (ElementNotInteractableException, ElementClickInterceptedException) as e:
             print(f"Exception ${e}")
             pass
